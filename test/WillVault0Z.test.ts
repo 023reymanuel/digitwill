@@ -5,6 +5,11 @@ import { network } from "hardhat";
 // Connect to Hardhat network
 const { viem, networkHelpers } = await network.connect();
 
+// Helper function to compare Ethereum addresses (case-insensitive)
+function compareAddresses(addr1: string, addr2: string): boolean {
+    return addr1.toLowerCase() === addr2.toLowerCase();
+}
+
 describe("WillVault - Digital Will Vault Contract", function () {
     // ============ FIXTURE ============
     async function deployWillVaultFixture() {
@@ -42,7 +47,8 @@ describe("WillVault - Digital Will Vault Contract", function () {
             const { willVault, owner } = await networkHelpers.loadFixture(deployWillVaultFixture);
             
             const contractOwner = await willVault.read.owner();
-            expect(contractOwner).to.equal(owner.address);
+            // FIX: Use case-insensitive comparison for Ethereum addresses
+            expect(compareAddresses(contractOwner, owner.address)).to.be.true;
             console.log(`✅ Owner set to: ${contractOwner}`);
         });
         
@@ -379,9 +385,10 @@ describe("WillVault - Digital Will Vault Contract", function () {
             const guardians = await willVault.read.getGuardians();
             
             expect(guardians).to.have.lengthOf(3);
-            expect(guardians[0]).to.equal(guardian1.address);
-            expect(guardians[1]).to.equal(guardian2.address);
-            expect(guardians[2]).to.equal(guardian3.address);
+            // FIX: Use case-insensitive comparison for Ethereum addresses
+            expect(compareAddresses(guardians[0], guardian1.address)).to.be.true;
+            expect(compareAddresses(guardians[1], guardian2.address)).to.be.true;
+            expect(compareAddresses(guardians[2], guardian3.address)).to.be.true;
             console.log("✅ getGuardians returns correct addresses");
         });
         
@@ -455,7 +462,7 @@ describe("WillVault - Digital Will Vault Contract", function () {
             console.log("1. guardianCount() → Use TypeScript workaround (as any)");
             console.log("2. isConfirmed(address) → Pass address as array [address]");
             console.log("3. isGuardian(address) → Pass address as array [address]");
-            console.log("4. All other functions work as expected");
+            console.log("4. Ethereum addresses → Use case-insensitive comparison");
             console.log("✅ All TypeScript issues resolved!");
         });
     });
